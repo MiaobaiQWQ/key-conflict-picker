@@ -82,7 +82,12 @@ public final class KeyInterceptor {
             return;
         }
         ConflictRegistry.groupFor(keyCode, true).ifPresent(group -> {
+            // 无论是否开启拦截都记录最近冲突，便于 /kcp enable last
             ConflictRegistry.markLast(group);
+            // 白名单模式：仅拦截由 /kcp enable 开启的键
+            if (!RememberedStore.isKeyEnabled(group.keyCode(), group.modifier())) {
+                return;
+            }
             takenKey = keyCode;
             pressTime = System.currentTimeMillis();
             takenGroup = group;

@@ -2,14 +2,18 @@ package com.example.keyconflictpicker.core;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.client.settings.KeyModifier;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 记忆存储 + 模组配置。
@@ -17,9 +21,11 @@ import java.util.Map;
  * <pre>
  * {
  *   "holdTimeMs": 500,
+ *   "enabledKeys": ["71:NONE"],
  *   "remembered": { "&lt;冲突组 id&gt;": "&lt;条目 id&gt;" }
  * }
  * </pre>
+ * 默认不拦截任何按键，仅对 {@code enabledKeys} 中由 /kcp enable 开启的键弹窗。
  * 冲突组 id 包含绑定集合的哈希，增删模组按键后旧记忆自动失效。
  */
 public final class RememberedStore {
@@ -29,6 +35,7 @@ public final class RememberedStore {
 
     private static int holdTimeMs = 500;
     private static final Map<String, String> remembered = new LinkedHashMap<>();
+    private static final Set<String> enabledKeys = new LinkedHashSet<>();
     private static boolean loaded = false;
 
     private RememberedStore() {
@@ -49,6 +56,10 @@ public final class RememberedStore {
                     root.getAsJsonObject("remembered").entrySet().forEach(
                             entry -> remembered.put(entry.getKey(), entry.getValue().getAsString()));
                 }
+                if (root.has("enabledKeys")) {
+                    root.getAsJsonArray("enabledKeys").forEach(
+                            element -> enabledKeys.add(element.getAsString()));
+                }
             }
         } catch (Throwable ignored) {
             // 配置损坏时回退为默认值
@@ -59,6 +70,9 @@ public final class RememberedStore {
         try {
             JsonObject root = new JsonObject();
             root.addProperty("holdTimeMs", holdTimeMs);
+            JsonArray keys = new JsonArray();
+            enabledKeys.forEach(keys::add);
+            root.add("enabledKeys", keys);
             JsonObject map = new JsonObject();
             remembered.forEach(map::addProperty);
             root.add("remembered", map);
@@ -72,6 +86,36 @@ public final class RememberedStore {
     public static synchronized int holdTimeMs() {
         ensureLoaded();
         return holdTimeMs;
+    }
+
+    private static String enabledKey(int keyCode, KeyModifier modifier) {
+        return keyCode + ":" + modifier.name();
+    }
+
+    /** 该键是否已由 /kcp enable 开启弹窗拦截。 */
+    public static synchronized boolean isKeyEnabled(int keyCode, KeyModifier modifier) {
+        ensureLoaded();
+        return enabledKeys.contains(enabledKey(keyCode, modifier));
+    }
+
+    /** 开启某键的弹窗拦截，返回状态是否变化。 */
+    public static synchronized boolean enableKey(int keyCode, KeyModifier modifier) {
+        ensureLoaded();
+        if (enabledKeys.add(enabledKey(keyCode, modifier))) {
+            save();
+            return true;
+        }
+        return false;
+    }
+
+    /** 关闭某键的弹窗拦截，返回状态是否变化。 */
+    public static synchronized boolean disableKey(int keyCode, KeyModifier modifier) {
+        ensureLoaded();
+        if (enabledKeys.remove(enabledKey(keyCode, modifier))) {
+            save();
+            return true;
+        }
+        return false;
     }
 
     /** 查询某冲突组已记忆的条目 id，未记忆返回 null。 */

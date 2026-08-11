@@ -12,6 +12,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,18 @@ public final class KcpCommand {
                                 .suggests(KEY_SUGGESTIONS)
                                 .executes(context -> pick(context.getSource(),
                                         StringArgumentType.getString(context, "key")))))
+                .then(Commands.literal("enable")
+                        .then(Commands.literal("last").executes(context -> enableLast(context.getSource())))
+                        .then(Commands.argument("key", StringArgumentType.word())
+                                .suggests(KEY_SUGGESTIONS)
+                                .executes(context -> enable(context.getSource(),
+                                        StringArgumentType.getString(context, "key")))))
+                .then(Commands.literal("disable")
+                        .then(Commands.literal("last").executes(context -> disableLast(context.getSource())))
+                        .then(Commands.argument("key", StringArgumentType.word())
+                                .suggests(KEY_SUGGESTIONS)
+                                .executes(context -> disable(context.getSource(),
+                                        StringArgumentType.getString(context, "key")))))
                 .then(Commands.literal("set")
                         .then(Commands.argument("key", StringArgumentType.word())
                                 .suggests(KEY_SUGGESTIONS)
@@ -77,7 +90,11 @@ public final class KcpCommand {
                 bindings.append(Component.translatable(group.mappings().get(i).getName()).getString());
             }
             String line = group.keyDisplayName().getString() + " -> " + bindings;
-            source.sendSuccess(() -> Component.literal("  " + line), false);
+            MutableComponent component = Component.literal("  " + line);
+            if (RememberedStore.isKeyEnabled(group.keyCode(), group.modifier())) {
+                component.append(Component.translatable("keyconflictpicker.cmd.list.enabled"));
+            }
+            source.sendSuccess(() -> component, false);
         }
         return groups.size();
     }
@@ -109,6 +126,62 @@ public final class KcpCommand {
         source.sendSuccess(() -> Component.translatable("keyconflictpicker.cmd.pick.opened",
                 group.get().keyDisplayName().getString()), false);
         return 1;
+    }
+
+    private static int enable(CommandSourceStack source, String keyName) {
+        int keyCode = parseKeyCode(keyName);
+        if (keyCode == -1) {
+            source.sendFailure(Component.translatable("keyconflictpicker.cmd.pick.unknown_key", keyName));
+            return 0;
+        }
+        Optional<ConflictRegistry.Group> group = ConflictRegistry.groupForAnyModifier(keyCode, false);
+        if (group.isEmpty()) {
+            source.sendFailure(Component.translatable("keyconflictpicker.cmd.pick.no_conflict", keyName));
+            return 0;
+        }
+        if (RememberedStore.enableKey(keyCode, group.get().modifier())) {
+            source.sendSuccess(() -> Component.translatable("keyconflictpicker.cmd.enable.ok", keyName), false);
+        } else {
+            source.sendSuccess(() -> Component.translatable("keyconflictpicker.cmd.enable.already", keyName), false);
+        }
+        return 1;
+    }
+
+    private static int enableLast(CommandSourceStack source) {
+        Optional<ConflictRegistry.Group> group = ConflictRegistry.lastGroup();
+        if (group.isEmpty()) {
+            source.sendFailure(Component.translatable("keyconflictpicker.cmd.pick.no_last"));
+            return 0;
+        }
+        return enable(source, shortKeyName(group.get().keyCode()));
+    }
+
+    private static int disable(CommandSourceStack source, String keyName) {
+        int keyCode = parseKeyCode(keyName);
+        if (keyCode == -1) {
+            source.sendFailure(Component.translatable("keyconflictpicker.cmd.pick.unknown_key", keyName));
+            return 0;
+        }
+        Optional<ConflictRegistry.Group> group = ConflictRegistry.groupForAnyModifier(keyCode, false);
+        if (group.isEmpty()) {
+            source.sendFailure(Component.translatable("keyconflictpicker.cmd.pick.no_conflict", keyName));
+            return 0;
+        }
+        if (RememberedStore.disableKey(keyCode, group.get().modifier())) {
+            source.sendSuccess(() -> Component.translatable("keyconflictpicker.cmd.disable.ok", keyName), false);
+            return 1;
+        }
+        source.sendFailure(Component.translatable("keyconflictpicker.cmd.disable.none", keyName));
+        return 0;
+    }
+
+    private static int disableLast(CommandSourceStack source) {
+        Optional<ConflictRegistry.Group> group = ConflictRegistry.lastGroup();
+        if (group.isEmpty()) {
+            source.sendFailure(Component.translatable("keyconflictpicker.cmd.pick.no_last"));
+            return 0;
+        }
+        return disable(source, shortKeyName(group.get().keyCode()));
     }
 
     private static int set(CommandSourceStack source, String keyName, String entryArg) {
