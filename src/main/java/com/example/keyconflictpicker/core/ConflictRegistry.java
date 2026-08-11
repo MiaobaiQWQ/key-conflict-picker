@@ -69,6 +69,10 @@ public final class ConflictRegistry {
             if (mappings.size() < 2) {
                 continue;
             }
+            // 纯基础按键（移动/跳跃等）之间的冲突不参与弹窗拦截
+            if (mappings.stream().allMatch(VanillaKeys::isBase)) {
+                continue;
+            }
             String[] parts = entry.getKey().split("\\|");
             groups.add(new Group(Integer.parseInt(parts[0]), KeyModifier.valueOf(parts[1]), List.copyOf(mappings)));
         }
