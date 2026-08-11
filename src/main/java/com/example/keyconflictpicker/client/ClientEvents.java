@@ -4,7 +4,7 @@ import com.example.keyconflictpicker.command.KcpCommand;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterClientCommandsEvent;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 
 /** 游戏总线上的客户端事件订阅。 */
 @EventBusSubscriber(Dist.CLIENT)

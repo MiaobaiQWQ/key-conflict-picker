@@ -2,6 +2,7 @@
 .gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
+.gradle-build.log
 
 # ModDevGradle / NeoForge 开发环境
 runs/

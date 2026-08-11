@@ -11,12 +11,10 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -109,7 +107,9 @@ public class ConflictSelectScreen extends Screen {
                 left + PANEL_WIDTH / 2, panelTop + panelHeight - 13, 0x808080);
 
         if (hovered != null && !hovered.tooltip().isEmpty()) {
-            graphics.renderTooltip(this.font, hovered.tooltip(), mouseX, mouseY);
+            graphics.renderTooltip(this.font,
+                    hovered.tooltip().stream().map(Component::getVisualOrderText).toList(),
+                    mouseX, mouseY);
         }
     }
 
@@ -118,12 +118,19 @@ public class ConflictSelectScreen extends Screen {
             return entry.ownerLabel();
         }
         if (entry instanceof KeyMappingEntry keyMappingEntry) {
-            Optional<ModContainer> container = ModList.get().getModContainerByObject(keyMappingEntry.mapping());
-            if (container.isPresent()) {
-                return container.get().getModInfo().getDisplayName();
-            }
             if (VANILLA_CATEGORIES.contains(keyMappingEntry.mapping().getCategory())) {
                 return "Minecraft";
+            }
+            // 按翻译键前缀启发式探测：key.<modid>.xxx
+            String name = keyMappingEntry.mapping().getName();
+            if (name.startsWith("key.")) {
+                int secondDot = name.indexOf('.', "key.".length());
+                if (secondDot > "key.".length()) {
+                    String candidate = name.substring("key.".length(), secondDot);
+                    if (ModList.get().isLoaded(candidate)) {
+                        return candidate;
+                    }
+                }
             }
         }
         return I18n.get("keyconflictpicker.owner.unknown");

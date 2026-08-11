@@ -3,15 +3,16 @@ package com.example.keyconflictpicker.core;
 import com.example.keyconflictpicker.api.ConflictEntry;
 import com.example.keyconflictpicker.api.GatherConflictEntriesEvent;
 import com.example.keyconflictpicker.api.KeyMappingEntry;
+import com.example.keyconflictpicker.client.DebugBindings;
 import com.example.keyconflictpicker.client.gui.ConflictSelectScreen;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.input.InputEvent;
-import net.neoforged.neoforge.event.tick.ClientTickEvent;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;

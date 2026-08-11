@@ -8,8 +8,8 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import net.minecraft.client.multiplayer.ClientCommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 
@@ -28,7 +28,7 @@ public final class KcpCommand {
     }
 
     /** 按键名补全：所有冲突组涉及的物理键。 */
-    private static final SuggestionProvider<ClientCommandSourceStack> KEY_SUGGESTIONS =
+    private static final SuggestionProvider<CommandSourceStack> KEY_SUGGESTIONS =
             (context, builder) -> {
                 List<String> names = new ArrayList<>();
                 for (ConflictRegistry.Group group : ConflictRegistry.scan(false)) {
@@ -37,7 +37,7 @@ public final class KcpCommand {
                 return SharedSuggestionProvider.suggest(names.stream().distinct().toList(), builder);
             };
 
-    public static void register(CommandDispatcher<ClientCommandSourceStack> dispatcher) {
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("kcp")
                 .then(Commands.literal("list").executes(context -> list(context.getSource())))
                 .then(Commands.literal("pick")
@@ -61,10 +61,10 @@ public final class KcpCommand {
                                         StringArgumentType.getString(context, "key"))))));
     }
 
-    private static int list(ClientCommandSourceStack source) {
+    private static int list(CommandSourceStack source) {
         List<ConflictRegistry.Group> groups = ConflictRegistry.scan(false);
         if (groups.isEmpty()) {
-            source.sendError(Component.translatable("keyconflictpicker.cmd.list.empty"));
+                        source.sendFailure(Component.translatable("keyconflictpicker.cmd.list.empty"));
             return 0;
         }
         source.sendSuccess(() -> Component.translatable("keyconflictpicker.cmd.list.header", groups.size()), false);
@@ -82,15 +82,15 @@ public final class KcpCommand {
         return groups.size();
     }
 
-    private static int pick(ClientCommandSourceStack source, String keyName) {
+    private static int pick(CommandSourceStack source, String keyName) {
         int keyCode = parseKeyCode(keyName);
         if (keyCode == -1) {
-            source.sendError(Component.translatable("keyconflictpicker.cmd.pick.unknown_key", keyName));
+            source.sendFailure(Component.translatable("keyconflictpicker.cmd.pick.unknown_key", keyName));
             return 0;
         }
         Optional<ConflictRegistry.Group> group = ConflictRegistry.groupForAnyModifier(keyCode, false);
         if (group.isEmpty()) {
-            source.sendError(Component.translatable("keyconflictpicker.cmd.pick.no_conflict", keyName));
+            source.sendFailure(Component.translatable("keyconflictpicker.cmd.pick.no_conflict", keyName));
             return 0;
         }
         ConflictRegistry.markLast(group.get());
@@ -99,10 +99,10 @@ public final class KcpCommand {
         return 1;
     }
 
-    private static int pickLast(ClientCommandSourceStack source) {
+    private static int pickLast(CommandSourceStack source) {
         Optional<ConflictRegistry.Group> group = ConflictRegistry.lastGroup();
         if (group.isEmpty()) {
-            source.sendError(Component.translatable("keyconflictpicker.cmd.pick.no_last"));
+            source.sendFailure(Component.translatable("keyconflictpicker.cmd.pick.no_last"));
             return 0;
         }
         KeyInterceptor.openPicker(group.get());
@@ -111,21 +111,21 @@ public final class KcpCommand {
         return 1;
     }
 
-    private static int set(ClientCommandSourceStack source, String keyName, String entryArg) {
+    private static int set(CommandSourceStack source, String keyName, String entryArg) {
         int keyCode = parseKeyCode(keyName);
         if (keyCode == -1) {
-            source.sendError(Component.translatable("keyconflictpicker.cmd.pick.unknown_key", keyName));
+            source.sendFailure(Component.translatable("keyconflictpicker.cmd.pick.unknown_key", keyName));
             return 0;
         }
         Optional<ConflictRegistry.Group> group = ConflictRegistry.groupForAnyModifier(keyCode, false);
         if (group.isEmpty()) {
-            source.sendError(Component.translatable("keyconflictpicker.cmd.pick.no_conflict", keyName));
+            source.sendFailure(Component.translatable("keyconflictpicker.cmd.pick.no_conflict", keyName));
             return 0;
         }
         List<ConflictEntry> entries = KeyInterceptor.entriesFor(group.get());
         ConflictEntry selected = matchEntry(entries, entryArg);
         if (selected == null) {
-            source.sendError(Component.translatable("keyconflictpicker.cmd.set.invalid", entryArg, entries.size()));
+            source.sendFailure(Component.translatable("keyconflictpicker.cmd.set.invalid", entryArg, entries.size()));
             return 0;
         }
         RememberedStore.remember(group.get().id(), selected.id());
@@ -135,10 +135,10 @@ public final class KcpCommand {
         return 1;
     }
 
-    private static int forget(ClientCommandSourceStack source, String keyName) {
+    private static int forget(CommandSourceStack source, String keyName) {
         int keyCode = parseKeyCode(keyName);
         if (keyCode == -1) {
-            source.sendError(Component.translatable("keyconflictpicker.cmd.pick.unknown_key", keyName));
+            source.sendFailure(Component.translatable("keyconflictpicker.cmd.pick.unknown_key", keyName));
             return 0;
         }
         Optional<ConflictRegistry.Group> group = ConflictRegistry.groupForAnyModifier(keyCode, false);
@@ -146,14 +146,14 @@ public final class KcpCommand {
             source.sendSuccess(() -> Component.translatable("keyconflictpicker.cmd.forget.one", keyName), false);
             return 1;
         }
-        source.sendError(Component.translatable("keyconflictpicker.cmd.forget.none"));
+        source.sendFailure(Component.translatable("keyconflictpicker.cmd.forget.none"));
         return 0;
     }
 
-    private static int forgetAll(ClientCommandSourceStack source) {
+    private static int forgetAll(CommandSourceStack source) {
         int count = RememberedStore.forgetAll();
         if (count == 0) {
-            source.sendError(Component.translatable("keyconflictpicker.cmd.forget.all_empty"));
+            source.sendFailure(Component.translatable("keyconflictpicker.cmd.forget.all_empty"));
             return 0;
         }
         source.sendSuccess(() -> Component.translatable("keyconflictpicker.cmd.forget.all", count), false);
