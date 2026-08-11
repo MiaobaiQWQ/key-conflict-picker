@@ -1,8 +1,10 @@
 package com.example.keyconflictpicker.command;
 
 import com.example.keyconflictpicker.api.ConflictEntry;
+import com.example.keyconflictpicker.client.gui.KeyBindingsListScreen;
 import com.example.keyconflictpicker.core.ConflictRegistry;
 import com.example.keyconflictpicker.core.KeyInterceptor;
+import com.example.keyconflictpicker.core.PendingScreens;
 import com.example.keyconflictpicker.core.RememberedStore;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.brigadier.CommandDispatcher;
@@ -41,6 +43,7 @@ public final class KcpCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("kcp")
                 .then(Commands.literal("list").executes(context -> list(context.getSource())))
+                .then(Commands.literal("gui").executes(context -> openGui(context.getSource())))
                 .then(Commands.literal("pick")
                         .then(Commands.literal("last").executes(context -> pickLast(context.getSource())))
                         .then(Commands.argument("key", StringArgumentType.word())
@@ -97,6 +100,12 @@ public final class KcpCommand {
             source.sendSuccess(() -> component, false);
         }
         return groups.size();
+    }
+
+    private static int openGui(CommandSourceStack source) {
+        PendingScreens.open(KeyBindingsListScreen::new);
+        source.sendSuccess(() -> Component.translatable("keyconflictpicker.cmd.gui.opened"), false);
+        return 1;
     }
 
     private static int pick(CommandSourceStack source, String keyName) {

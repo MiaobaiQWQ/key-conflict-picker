@@ -10,14 +10,14 @@ import java.util.function.Supplier;
  * 这样从聊天框（客户端指令）或按键事件里触发时，不会被聊天界面关闭时的
  * {@code setScreen(null)} 覆盖。
  */
-final class PendingScreens {
+public final class PendingScreens {
 
     private static Supplier<Screen> pending;
 
     private PendingScreens() {
     }
 
-    static synchronized void open(Supplier<Screen> screen) {
+    public static synchronized void open(Supplier<Screen> screen) {
         pending = screen;
     }
 

@@ -4,6 +4,11 @@
   "keyconflictpicker.screen.hint": "数字键 1-9 快速选择 · Esc 取消",
   "keyconflictpicker.owner.unknown": "未知来源",
 
+  "keyconflictpicker.gui.title": "按键绑定一览",
+  "keyconflictpicker.gui.summary": "共 %s 个绑定，%s 个未绑定",
+  "keyconflictpicker.gui.unbound": "未绑定",
+  "keyconflictpicker.cmd.gui.opened": "正在打开按键绑定一览…",
+
   "keyconflictpicker.cmd.list.empty": "未检测到按键冲突。",
   "keyconflictpicker.cmd.list.header": "检测到 %s 组按键冲突：",
   "keyconflictpicker.cmd.pick.unknown_key": "无法识别按键：%s",

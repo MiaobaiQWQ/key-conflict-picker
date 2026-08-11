@@ -4,6 +4,11 @@
   "keyconflictpicker.screen.hint": "Press 1-9 to select quickly · Esc to cancel",
   "keyconflictpicker.owner.unknown": "Unknown source",
 
+  "keyconflictpicker.gui.title": "Key Bindings Overview",
+  "keyconflictpicker.gui.summary": "%s bindings in total, %s unbound",
+  "keyconflictpicker.gui.unbound": "Unbound",
+  "keyconflictpicker.cmd.gui.opened": "Opening the key bindings overview...",
+
   "keyconflictpicker.cmd.list.empty": "No key conflicts detected.",
   "keyconflictpicker.cmd.list.header": "Found %s conflicting key group(s):",
   "keyconflictpicker.cmd.pick.unknown_key": "Unknown key: %s",

@@ -65,11 +65,11 @@ public class ConflictSelectScreen extends Screen {
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         int left = panelLeft();
 
-        // 半透明遮罩 + 面板
-        graphics.fill(0, 0, this.width, this.height, 0x40000000);
-        graphics.fill(left, panelTop, left + PANEL_WIDTH, panelTop + panelHeight, 0xEE15151C);
-        graphics.fill(left, panelTop, left + PANEL_WIDTH, panelTop + 1, 0xFF4A4A55);
-        graphics.fill(left, panelTop + panelHeight - 1, left + PANEL_WIDTH, panelTop + panelHeight, 0xFF4A4A55);
+        // 半透明遮罩 + 透明面板
+        graphics.fill(0, 0, this.width, this.height, 0x1A000000);
+        graphics.fill(left, panelTop, left + PANEL_WIDTH, panelTop + panelHeight, 0x7815151C);
+        graphics.fill(left, panelTop, left + PANEL_WIDTH, panelTop + 1, 0x884A4A55);
+        graphics.fill(left, panelTop + panelHeight - 1, left + PANEL_WIDTH, panelTop + panelHeight, 0x884A4A55);
 
         graphics.drawCenteredString(this.font,
                 Component.translatable("keyconflictpicker.screen.subtitle", group.keyDisplayName()),
