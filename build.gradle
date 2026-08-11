@@ -1,0 +1,50 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.78'
+}
+
+group = 'com.example.keyconflictpicker'
+version = mod_version
+
+base {
+    archivesName = 'keyconflictpicker'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+neoForge {
+    version = project.neo_version
+
+    runs {
+        client {
+            client()
+            // 调试用：注册一个与跳跃（空格）冲突的测试按键
+            systemProperty 'keyconflictpicker.debugBindings', 'true'
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+processResources {
+    def replace = ['mod_version': version.toString()]
+    inputs.properties(replace)
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand replace
+    }
+}
+
+jar {
+    manifest {
+        attributes([
+                'Implementation-Title'  : project.name,
+                'Implementation-Version': project.version
+        ])
+    }
+}

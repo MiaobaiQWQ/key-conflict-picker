@@ -1,0 +1,28 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+
+[[mods]]
+modId = "keyconflictpicker"
+version = "${mod_version}"
+displayName = "Key Conflict Picker"
+authors = "kllon"
+description = '''
+按键冲突选择器：当多个按键绑定共用同一物理键时，弹出选择界面让用户决定本次按键要执行的操作。
+支持长按重新选择、记忆默认操作、/kcp 客户端指令，以及供其他模组接入的扩展 API。
+'''
+side = "CLIENT"
+
+[[dependencies.keyconflictpicker]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.0,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.keyconflictpicker]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,1.22)"
+ordering = "NONE"
+side = "CLIENT"

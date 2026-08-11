@@ -1,0 +1,23 @@
+{
+  "keyconflictpicker.screen.title": "Key Conflict",
+  "keyconflictpicker.screen.subtitle": "%s has multiple bindings. Choose what to do this time:",
+  "keyconflictpicker.screen.hint": "Press 1-9 to select quickly · Esc to cancel",
+  "keyconflictpicker.owner.unknown": "Unknown source",
+
+  "keyconflictpicker.cmd.list.empty": "No key conflicts detected.",
+  "keyconflictpicker.cmd.list.header": "Found %s conflicting key group(s):",
+  "keyconflictpicker.cmd.pick.unknown_key": "Unknown key: %s",
+  "keyconflictpicker.cmd.pick.no_conflict": "Key %s has no conflicting bindings.",
+  "keyconflictpicker.cmd.pick.opened": "Opened the conflict picker for %s.",
+  "keyconflictpicker.cmd.pick.no_last": "No key conflict has happened yet.",
+  "keyconflictpicker.cmd.set.ok": "Default action of %s is now \"%s\".",
+  "keyconflictpicker.cmd.set.invalid": "Entry \"%s\" not found. Use an index 1-%s or a binding name.",
+  "keyconflictpicker.cmd.forget.one": "Forgot the remembered choice for %s.",
+  "keyconflictpicker.cmd.forget.none": "No remembered choice for that key.",
+  "keyconflictpicker.cmd.forget.all": "Forgot all %s remembered choice(s).",
+  "keyconflictpicker.cmd.forget.all_empty": "There are no remembered choices.",
+
+  "keyconflictpicker.debug.message": "Debug action A executed",
+  "key.keyconflictpicker.debug_a": "Debug Action A",
+  "key.categories.keyconflictpicker": "Key Conflict Picker (Debug)"
+}

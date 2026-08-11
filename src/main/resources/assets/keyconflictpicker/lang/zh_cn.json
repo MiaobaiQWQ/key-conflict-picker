@@ -1,0 +1,23 @@
+{
+  "keyconflictpicker.screen.title": "按键冲突",
+  "keyconflictpicker.screen.subtitle": "%s 上存在多个绑定，选择本次要执行的操作：",
+  "keyconflictpicker.screen.hint": "数字键 1-9 快速选择 · Esc 取消",
+  "keyconflictpicker.owner.unknown": "未知来源",
+
+  "keyconflictpicker.cmd.list.empty": "未检测到按键冲突。",
+  "keyconflictpicker.cmd.list.header": "检测到 %s 组按键冲突：",
+  "keyconflictpicker.cmd.pick.unknown_key": "无法识别按键：%s",
+  "keyconflictpicker.cmd.pick.no_conflict": "按键 %s 没有冲突的绑定。",
+  "keyconflictpicker.cmd.pick.opened": "已打开 %s 的冲突选择界面。",
+  "keyconflictpicker.cmd.pick.no_last": "还没有发生过按键冲突。",
+  "keyconflictpicker.cmd.set.ok": "已将 %s 的默认操作设为「%s」。",
+  "keyconflictpicker.cmd.set.invalid": "找不到条目「%s」，请输入序号 1-%s 或绑定名称。",
+  "keyconflictpicker.cmd.forget.one": "已清除 %s 的默认选择。",
+  "keyconflictpicker.cmd.forget.none": "该按键没有已记忆的选择。",
+  "keyconflictpicker.cmd.forget.all": "已清除全部 %s 条记忆。",
+  "keyconflictpicker.cmd.forget.all_empty": "当前没有任何已记忆的选择。",
+
+  "keyconflictpicker.debug.message": "调试动作 A 已执行",
+  "key.keyconflictpicker.debug_a": "调试动作 A",
+  "key.categories.keyconflictpicker": "按键冲突选择器（调试）"
+}
