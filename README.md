@@ -33,13 +33,7 @@ NeoForge **1.21.1** 客户端模组：当多个按键绑定共用同一个物理
 
 ## 构建与开发
 
-需要 **JDK 21+**（Gradle 工具链会自动解析到 21）。首次使用需生成 Gradle Wrapper：
-
-```bash
-gradle wrapper --gradle-version 8.10
-```
-
-之后：
+需要 **JDK 21+**（Gradle 工具链会自动解析到 21），仓库已内置 Gradle Wrapper：
 
 ```bash
 ./gradlew build      # 编译并打包，产物在 build/libs
@@ -49,6 +43,17 @@ gradle wrapper --gradle-version 8.10
 开发客户端默认带 `-Dkeyconflictpicker.debugBindings=true`：注册一个绑定到空格的
 「调试动作 A」与原版跳跃冲突，进入游戏后按空格（会记录最近冲突），
 执行 `/kcp enable last`（或 `/kcp enable space`）后再按空格即可验证完整流程。
+
+## 自动构建与发布（GitHub Actions）
+
+- **每次推送 / PR**：自动编译验证，构建产物可在 Actions 页面下载（`build.yml`）。
+- **发布版本**：更新 `gradle.properties` 中的 `mod_version` 并推送 `v*` 标签即可，
+  CI 会自动构建并创建带 jar 附件的 GitHub Release（`release.yml`）：
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
 
 ## 配置文件
 
